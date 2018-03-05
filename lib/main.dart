@@ -57,12 +57,13 @@ class HomePageState extends State<HomePage> {
           style: new TextStyle(fontSize: 18.0)
       ),
       leading: new Image.asset(
-          solution['image'].toString().replaceAll('ast/', 'images/'),
+        solution['image'].toString().replaceAll('ast/', 'images/'),
         width: 200.0,
         height: 48.0,
       ),
       trailing: new IconButton(
-        icon: isFavorite ? new Icon(Icons.favorite) : new Icon(Icons.favorite_border),
+        icon: isFavorite ? new Icon(Icons.favorite) : new Icon(
+            Icons.favorite_border),
         color: isFavorite ? Colors.red : null,
         onPressed: () {
           setState(() {
@@ -83,7 +84,9 @@ class HomePageState extends State<HomePage> {
    */
   Widget _buildListView() {
     List<Widget> solutionListItems = new List();
-    Map<String, List<Map<String, dynamic>>> solutionsByType = new Map<String, List<Map<String, dynamic>>>();
+    Map<String, List<Map<String, dynamic>>> solutionsByType = new Map<
+        String,
+        List<Map<String, dynamic>>>();
 
     if (data != null) {
       for (Map<String, dynamic> a in data['Solutions']) {
@@ -120,20 +123,81 @@ class HomePageState extends State<HomePage> {
     return new ListView();
   }
 
-    Widget _buildDrawer() {
-      List<Widget> solutionListItems = new List();
+  Widget _buildDrawer() {
+    var headerText = new Text('Header');
 
-      if (data != null) {
-        solutionListItems.add(
-            new ListTile(
-              title: new Text('Favorites'),
-              leading: new Icon(Icons.favorite, color: Colors.red,),
-            )
-        );
-      }
+    var header = new DrawerHeader(child: headerText,);
 
-      return new ListView(children: solutionListItems);
-    }
+    var allSolutions = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('All Solutions'),
+    );
+
+    var favorites = new ListTile(
+      leading: new Icon(Icons.favorite),
+      title: new Text('Favorites'),
+    );
+
+    var agricultureTools = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Agriculture & Tools'),
+    );
+
+    var energyCooking = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Energy and Cooking'),
+    );
+
+    var healthMedical = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Health & Medical Care'),
+    );
+
+    var educationConnectivity = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Education & Connectivity'),
+    );
+
+    var housingTransport = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Housing & Transport'),
+    );
+
+    var waterSanitiation = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Water & Sanitation'),
+    );
+
+    var additionalSolutions = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('Additional Solutions'),
+    );
+
+    var aboutUs = new ListTile(
+      leading: new Icon(Icons.archive),
+      title: new Text('About Us'),
+    );
+
+    var children = [
+      header,
+      allSolutions,
+      favorites,
+      agricultureTools,
+      energyCooking,
+      healthMedical,
+      educationConnectivity,
+      housingTransport,
+      waterSanitiation,
+      additionalSolutions,
+      aboutUs
+    ];
+
+    var listView = new ListView(
+      children: children
+    );
+
+    return new Drawer(child: listView);
+  }
 
 
   void _favoriesPage() {
@@ -145,7 +209,7 @@ class HomePageState extends State<HomePage> {
                     final alreadySaved = _favorites.contains(pair);
                     return new ListTile(
                         title: new Text(
-                          pair
+                            pair
                         ),
                         trailing: new Icon(
                           alreadySaved ? Icons.favorite : Icons
@@ -156,7 +220,6 @@ class HomePageState extends State<HomePage> {
                           setState(() {
                             if (alreadySaved) {
                               _favorites.remove(pair);
-
                             } else {
                               _favorites.add(pair);
                             }
@@ -178,24 +241,24 @@ class HomePageState extends State<HomePage> {
             }));
   }
 
-    Widget buildApp(BuildContext context) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('TEL'),
-          actions: <Widget>[new IconButton(icon: new Icon(Icons.list),
-              tooltip: 'Favorites',
-              onPressed: _favoriesPage)
-          ],
-        ),
-        body: _buildListView(),
+  Widget buildApp(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('TEL'),
+        actions: <Widget>[new IconButton(icon: new Icon(Icons.list),
+            tooltip: 'Favorites',
+            onPressed: _favoriesPage)
+        ],
+      ),
+      body: _buildListView(),
 
-//        drawer: _buildDrawer(),
-        );
-    }
-
-    @override
-    Widget build(BuildContext context) {
-      getTelData();
-      return buildApp(context);
-    }
+      drawer: _buildDrawer(),
+    );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    getTelData();
+    return buildApp(context);
+  }
+}
