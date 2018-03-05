@@ -56,33 +56,62 @@ class HomePageState extends State<HomePage> {
           solution['name'],
           style: new TextStyle(fontSize: 18.0)
       ),
-      trailing: new Icon(
-        isFavorite ? Icons.favorite : Icons.favorite_border,
-        color: isFavorite ? Colors.red : null,
+      leading: new Image.asset(
+          solution['image'].toString().replaceAll('ast/', 'images/'),
+        width: 200.0,
+        height: 48.0,
       ),
-      onTap: () {
-        setState(() {
-          if (isFavorite) {
-            _favorites.remove(solution['name']);
-          } else {
-            _favorites.add(solution['name']);
-          }
-        });
-      },
-
+      trailing: new IconButton(
+        icon: isFavorite ? new Icon(Icons.favorite) : new Icon(Icons.favorite_border),
+        color: isFavorite ? Colors.red : null,
+        onPressed: () {
+          setState(() {
+            if (isFavorite) {
+              _favorites.remove(solution['name']);
+            } else {
+              _favorites.add(solution['name']);
+            }
+          });
+        },
+      ),
+      onTap: _favoriesPage,
     );
   }
 
+  /**
+   * Creates a Map of the solutions by category, used later for sorting and filtering.
+   */
   Widget _buildListView() {
     List<Widget> solutionListItems = new List();
+    Map<String, List<Map<String, dynamic>>> solutionsByType = new Map<String, List<Map<String, dynamic>>>();
 
     if (data != null) {
       for (Map<String, dynamic> a in data['Solutions']) {
         if (a.containsKey('publish') && a['publish'].contains('tel')) {
           solutionListItems.add(_buildRow(a));
           solutionListItems.add(new Divider());
+          if (a['category'] != null || a['category'] != 'null') {
+            if (a['category'] is List<String>) {
+              for (String s in a['category']) {
+                if (solutionsByType[s] == null) {
+                  solutionsByType.putIfAbsent(
+                      s, () => new List<Map<String, dynamic>>());
+                }
+                solutionsByType[s].add(a);
+              }
+            } else {
+              if (solutionsByType['category'] == null) {
+                solutionsByType.putIfAbsent(
+                    solutionsByType['category'].toString(), () =>
+                new List<Map<String, dynamic>>());
+              }
+              solutionsByType[solutionsByType['category'].toString()].add(a);
+            }
+          }
         }
       }
+
+      print(solutionsByType['water']);
       return new ListView(
         children: solutionListItems,
       );
