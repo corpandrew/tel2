@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -26,21 +28,26 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
 
+  var _telData;
   final _favorites = new Set<String>();
-  Map<String, dynamic> data;
 
-  getTelData() async {
+  Future<Null> getTelData() async {
     var httpClient = new HttpClient();
     var uri = new Uri.http(
         'techxlab.org',
         'pages.json'
     );
+
     try {
       var request = await httpClient.getUrl(uri);
       var response = await request.close();
       if (response.statusCode == HttpStatus.OK) {
         var responseBody = await response.transform(UTF8.decoder).join();
-        data = JSON.decode(responseBody);
+
+        setState(() {
+          _telData = JSON.decode(responseBody);
+        });
+
       } else {
         print('Couldn\'t retrieve data, status: ${response.statusCode}');
       }
@@ -57,9 +64,11 @@ class HomePageState extends State<HomePage> {
           style: new TextStyle(fontSize: 18.0)
       ),
       leading: new Image.asset(
-        solution['image'].toString().replaceAll('ast/', 'images/'),
-        width: 200.0,
-        height: 48.0,
+        solution['image'].toString().endsWith('.gif')
+            ? 'images/e41sag8-coolbot-image-v2.jpg'
+            : solution['image'].toString().replaceAll('ast/', 'images/'),
+        width: 100.0,
+        height: 50.0,
       ),
       trailing: new IconButton(
         icon: isFavorite ? new Icon(Icons.favorite) : new Icon(
@@ -75,7 +84,13 @@ class HomePageState extends State<HomePage> {
           });
         },
       ),
-      onTap: _favoriesPage,
+      onTap: () => solutionPage,
+      subtitle: new Text(
+          solution['#contact']['name'] == null
+              ? ''
+              : solution['#contact']['name'],
+        softWrap: false,
+      ),
     );
   }
 
@@ -88,8 +103,8 @@ class HomePageState extends State<HomePage> {
         String,
         List<Map<String, dynamic>>>();
 
-    if (data != null) {
-      for (Map<String, dynamic> a in data['Solutions']) {
+    if (_telData != null) {
+      for (Map<String, dynamic> a in _telData['Solutions']) {
         if (a.containsKey('publish') && a['publish'].contains('tel')) {
           solutionListItems.add(_buildRow(a));
           solutionListItems.add(new Divider());
@@ -114,7 +129,6 @@ class HomePageState extends State<HomePage> {
         }
       }
 
-      print(solutionsByType['water']);
       return new ListView(
         children: solutionListItems,
       );
@@ -124,9 +138,9 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildDrawer() {
-    var headerText = new Text('Header');
+    var headerImage = new Image.asset('images/icons/header.png');
 
-    var header = new DrawerHeader(child: headerText,);
+    var header = new DrawerHeader(child: headerImage,);
 
     var allSolutions = new ListTile(
       leading: new Icon(Icons.archive),
@@ -139,43 +153,84 @@ class HomePageState extends State<HomePage> {
     );
 
     var agricultureTools = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/agriculture.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Agriculture & Tools'),
     );
 
     var energyCooking = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/energy.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Energy and Cooking'),
     );
 
     var healthMedical = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/medical.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Health & Medical Care'),
     );
 
     var educationConnectivity = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/education.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Education & Connectivity'),
     );
 
     var housingTransport = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/housing.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Housing & Transport'),
     );
 
     var waterSanitiation = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/water.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Water & Sanitation'),
     );
 
     var additionalSolutions = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/other.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('Additional Solutions'),
     );
 
     var aboutUs = new ListTile(
-      leading: new Icon(Icons.archive),
+      leading: new Image.asset(
+        'images/icons/energy.png',
+        width: 24.0,
+        height: 24.0,
+        color: Colors.grey,
+      ),
       title: new Text('About Us'),
+
     );
 
     var children = [
@@ -192,15 +247,39 @@ class HomePageState extends State<HomePage> {
       aboutUs
     ];
 
-    var listView = new ListView(
-      children: children
-    );
+    var listView = new ListView(children: wrapColor(children,Colors.white),);
 
-    return new Drawer(child: listView);
+    return new Drawer(child: listView, );
   }
 
+  void solutionPage(Map<String, dynamic> solutionMap) {
+    Navigator.of(context).push(
+        new MaterialPageRoute(
+            builder: (context) {
+              return new Scaffold(
+                appBar: new AppBar(
+                  title: new Text(solutionMap['name']),
+                ),
+                body: new ListView(children: <Widget>[],),
+              );
+            }
+        )
+    );
+  }
 
-  void _favoriesPage() {
+  List<Widget> wrapColor(List<Widget> list, Color color) {
+
+    List<Widget> colorWidgetList = new List();
+
+    for (Widget widget in list) {
+      Widget currentWidget = new Container(child: widget, color: color,);
+      colorWidgetList.add(currentWidget);
+    }
+
+    return colorWidgetList;
+  }
+
+  void _favoritesPage() {
     Navigator.of(context).push(
         new MaterialPageRoute(
             builder: (context) {
@@ -238,7 +317,9 @@ class HomePageState extends State<HomePage> {
                 ),
                 body: new ListView(children: divided),
               );
-            }));
+            }
+        )
+    );
   }
 
   Widget buildApp(BuildContext context) {
@@ -247,7 +328,7 @@ class HomePageState extends State<HomePage> {
         title: new Text('TEL'),
         actions: <Widget>[new IconButton(icon: new Icon(Icons.list),
             tooltip: 'Favorites',
-            onPressed: _favoriesPage)
+            onPressed: _favoritesPage)
         ],
       ),
       body: _buildListView(),
@@ -261,4 +342,5 @@ class HomePageState extends State<HomePage> {
     getTelData();
     return buildApp(context);
   }
+
 }

@@ -25,6 +25,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+  #START OF IMAGES
     - images/101-boolify.jpg
     - images/102-whisper7878.jpg
     - images/103-60-watt-solar-12v-power-generator-kit.jpg
@@ -805,6 +806,22 @@ flutter:
     - images/zihs0h8-arclight.png
     - images/zs5u3uo-madidrop.jpeg
     - images/zs5u3uo-madidropinstructions.png
+
+  #END OF IMAGES
+
+  #START OF ICONS
+    - images/icons/agriculture.png
+    - images/icons/education.png
+    - images/icons/energy.png
+    - images/icons/header.png
+    - images/icons/housing.png
+    - images/icons/medical.png
+    - images/icons/other.png
+    - images/icons/water.png
+
+  #END OF ICONS
+
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
